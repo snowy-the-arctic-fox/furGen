@@ -9,8 +9,7 @@ from transformers import TFAutoModel
 from transformers import AutoTokenizer
 
 # Load the model configuration from a local file
-with open("D:\\Github\\Repo\\TensFlow-Test\\furGen\\config.json", "r") as f:
-    config_dict = json.load(f)
+config_dict = json.load(open("D:/Github/Repo/TensFlow-Test/furGen/config.json"))
 config = AutoConfig.from_dict(config_dict)
 
 # Load the model weights from the Hugging Face model hub
@@ -54,5 +53,5 @@ prompt = input("Fox with purple fur and green eyes: ")
 # Generate and save image
 print("Generating fursona image...")
 image = generate_fursona(prompt)
-image.save("D:\pfp\furGen(OUT1).png")
+image.save("D:/pfp/furGen(OUT1).png")
 print("Image saved!")
