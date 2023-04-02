@@ -1,6 +1,4 @@
 import os
-os.environ['HF_HOME'] = 'D:\\cache'
-os.environ["HUGGINGFACE_CO_API_TOKEN"] = "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"
 import tensorflow as tf
 import numpy as np
 import PIL.Image
@@ -10,6 +8,10 @@ from diffusers import DiffusionPipeline
 from transformers import CLIPProcessor, AutoTokenizer, TFAutoModel
 
 print("furGen-ON")
+
+# Prompt user for API token
+api_token = input("Please enter your Hugging Face API token: ")
+os.environ["HUGGINGFACE_CO_API_TOKEN"] = api_token
 
 # Load the model configuration from a URL
 print("getting request for config.json url")
