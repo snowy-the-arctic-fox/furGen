@@ -8,12 +8,15 @@ from transformers import CLIPProcessor, AutoConfig
 from transformers import TFAutoModel
 from transformers import AutoTokenizer
 
-# Load the model configuration from a local file
-config_dict = json.load(open("D:/Github/Repo/TensFlow-Test/furGen/config.json"))
-config = AutoConfig.from_dict(config_dict)
+# Load the model configuration from a URL
+config_url = "https://huggingface.co/lunarfish/furrydiffusion/resolve/main/config.json"
+config_path = tf.keras.utils.get_file("config.json", config_url, cache_dir="D:\\cache")
+with open(config_path) as f:
+    content = f.read()
+config = AutoConfig.from_pretrained("lunarfish/furrydiffusion", from_dict=json.loads(content))
 
 # Load the model weights from the Hugging Face model hub
-generator = TFAutoModel.from_pretrained("lunarfish/furrydiffusion", from_tf=True, config=config)
+generator = TFAutoModel.from_pretrained("lunarfish/furrydiffusion", config=config)
 
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -53,5 +56,5 @@ prompt = input("Fox with purple fur and green eyes: ")
 # Generate and save image
 print("Generating fursona image...")
 image = generate_fursona(prompt)
-image.save("D:/pfp/furGen(OUT1).png")
+image.save("D:\pfp\furGen(OUT1).png")
 print("Image saved!")
