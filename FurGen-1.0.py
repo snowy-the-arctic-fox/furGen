@@ -4,57 +4,48 @@ import tensorflow as tf
 import numpy as np
 import PIL.Image
 import json
-import torch
-from diffusers import DiffusionPipeline
-from transformers import CLIPConfiguration, CLIPImageProcessor
-from diffusers import StableDiffusionPipeline
+from transformers import CLIPProcessor, AutoConfig
+from transformers import TFAutoModel
+from transformers import AutoTokenizer
 
-# Load the model configuration
-config = CLIPConfiguration.from_pretrained("openai/clip-vit-base-patch32")
+# Load the model configuration from a local file
+with open("D:\\Github\\Repo\\TensFlow-Test\\furGen\\config.json", "r") as f:
+    config_dict = json.load(f)
+config = AutoConfig.from_dict(config_dict)
 
-# Create the CLIPImageProcessor
-image_processor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
+# Load the model weights from the Hugging Face model hub
+generator = TFAutoModel.from_pretrained("lunarfish/furrydiffusion", from_tf=True, config=config)
+
+clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # Create the diffusion pipeline
-pipeline = StableDiffusionPipeline.from_pretrained(
-    "lunarfish/furrydiffusion", 
-    config=config, 
-    image_processor=image_processor,
-    use_auth_token=True,
-    token="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",
-)
-
-# Check if the model is already downloaded
-if not os.path.exists("lunarfish/furrydiffusion"):
-    # Download the pre-trained model
-    print("Downloading model...")
-    pipeline = DiffusionPipeline.from_pretrained("lunarfish/furrydiffusion", use_auth_token=False, from_tf=True)
-else:
-    # Load the pre-trained model from the local directory
-    print("Loading model...")
-    pipeline = DiffusionPipeline.from_pretrained("lunarfish/furrydiffusion", use_auth_token=True)
-
-tokenizer = pipeline.tokenizer
-generator = pipeline.model
+print("creating diffusion pipeline")
+tokenizer = AutoTokenizer.from_pretrained("lunarfish/furrydiffusion")
 
 # Define function to generate image from text prompt
+print("generating fursona")
 def generate_fursona(prompt, truncation=0.5):
     # Generate text input
     input_text = tf.constant(prompt, tf.string)
-    
+
     # Convert input text to tokens
     input_tokens = tokenizer(input_text, truncation=truncation, padding='max_length', max_length=128, return_tensors='tf')
-    
+
     # Generate image from input tokens
-    with torch.no_grad():
-        noise = torch.randn([1, 512])
-        generated_image = generator([noise, input_tokens['input_ids']])
-    
+    with tf.device('/cpu:0'):
+        noise = tf.random.normal([1, 512])
+        generated_image = generator.generate(
+            input_ids=input_tokens['input_ids'],
+            attention_mask=input_tokens['attention_mask'],
+            random_noise=noise
+        )
+
     # Postprocess image
+    print("postprocessing")
     generated_image = (generated_image * 0.5 + 0.5) * 255
     generated_image = generated_image.numpy().astype(np.uint8)
     generated_image = PIL.Image.fromarray(generated_image[0])
-    
+
     return generated_image
 
 # Prompt user for text input
@@ -63,5 +54,5 @@ prompt = input("Fox with purple fur and green eyes: ")
 # Generate and save image
 print("Generating fursona image...")
 image = generate_fursona(prompt)
-image.save("D:\pfp\furGen(OUT1.png)")
+image.save("D:\pfp\furGen(OUT1).png")
 print("Image saved!")
