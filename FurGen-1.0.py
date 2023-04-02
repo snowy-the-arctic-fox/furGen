@@ -1,6 +1,6 @@
 import os
 os.environ['HF_HOME'] = 'D:\\cache'
-os.environ["HUGGINGFACE_CO_API_TOKEN"] = "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"
+os.environ["HUGGINGFACE_CO_API_TOKEN"] = "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"
 import tensorflow as tf
 import numpy as np
 import PIL.Image
@@ -19,7 +19,7 @@ config_path = tf.keras.utils.get_file("config.json", config_url, cache_dir=cache
 with open(config_path) as f:
     content = f.read()
 print(content)
-response = json.loads(tf.keras.utils.get_file("config.json", config_url, cache_dir=cache_dir))
+response = json.loads(content)
 model_config = response
 
 # Load the model weights from the Hugging Face model hub
