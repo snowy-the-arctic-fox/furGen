@@ -1,28 +1,29 @@
 import os
 os.environ['HF_HOME'] = 'D:\\cache'
+os.environ["HUGGINGFACE_CO_API_TOKEN"] = "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"
 import tensorflow as tf
 import numpy as np
 import PIL.Image
 import json
-from transformers import CLIPProcessor, AutoTokenizer
-import tensorflow.keras as keras
+import keras
+from transformers import CLIPProcessor, AutoTokenizer, TFAutoModel
 
 print("furGen-ON")
 
 # Load the model configuration from a URL
 print("getting request for config.json url")
-config_url = "https://huggingface.co/lunarfish/furry-diffusion/resolve/main/config.json"
+config_url = "https://huggingface.co/lunarfish/furry-diffusion/blob/main/unet/config.json"
 cache_dir = "D:\\cache"
-config_path = keras.utils.get_file("config.json", config_url, cache_dir=cache_dir)
+config_path = tf.keras.utils.get_file("config.json", config_url, cache_dir=cache_dir)
 with open(config_path) as f:
     content = f.read()
 print(content)
-response = json.loads(keras.utils.get_file("config.json", config_url, cache_dir=cache_dir))
+response = json.loads(tf.keras.utils.get_file("config.json", config_url, cache_dir=cache_dir))
 model_config = response
 
 # Load the model weights from the Hugging Face model hub
 print("loading model weights")
-generator = AutoModelForConditionalGeneration.from_pretrained("lunarfish/furry-diffusion", config=model_config)
+model = TFAutoModel.from_pretrained("lunarfish/furry-diffusion", config=model_config)
 
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -44,7 +45,7 @@ def generate_fursona(prompt, truncation=0.5):
     # Generate image from input tokens
     print("generating image")
     with tf.device('/cpu:0'):
-        generated_image = generator.generate(input_ids=input_tokens['input_ids'],
+        generated_image = model.generate(input_ids=input_tokens['input_ids'],
                                               attention_mask=input_tokens['attention_mask'],
                                               max_length=128,
                                               num_beams=1,
