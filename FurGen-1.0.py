@@ -6,6 +6,7 @@ import numpy as np
 import PIL.Image
 import json
 import keras
+from diffusers import DiffusionPipeline
 from transformers import CLIPProcessor, AutoTokenizer, TFAutoModel
 
 print("furGen-ON")
