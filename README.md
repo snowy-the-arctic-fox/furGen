@@ -1,9 +1,6 @@
 # furGen
 Want an AI that draws furries from text? furGen is here!
 
-# Tensorflow Tester
- Need anything done in tensorflow but dont know if it works? try this!
-
 # Installation
 ## Python
 ### Downloading Python
