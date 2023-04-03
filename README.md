@@ -1,6 +1,13 @@
 # furGen
 Want an AI that draws furries from text? furGen is here!
 
+(code broken - # Load the model configuration from a local file
+print("loading model configuration")
+with open("D:\\Github\\Repo\\TensFlow_Test\\furGen\\unet\\config.json") as f:
+    content = f.read()
+print(content)
+model_config = json.loads(content))
+
 # Installation
 ## Python
 ### Downloading Python
